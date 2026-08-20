@@ -48,7 +48,7 @@ Open your terminal (Mac/Linux) or Command Prompt/PowerShell (Windows) and run:
 
 ```bash
 git clone https://github.com/stede-technologies/vc-backend.git
-cd vendorconnect-api
+cd vc-backend
 ```
 
 ## 2. Install Poetry (Dependency Manager)
