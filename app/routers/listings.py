@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..schemas.listings import ListingCreate, ListingResponse
 from ..models.listing import Listing
@@ -29,10 +29,14 @@ def get_listings(db: Session = Depends(get_db)):
     return db.query(Listing).all()
 
 
-@router.get("/listings/{listing_id}")
-def get_listing(listing_id: int):
-    """Retrieves complete details for a specific listing."""
-    return {"listing_id": listing_id}
+@router.get("/listings/{listing_id}", response_model=ListingResponse)
+def get_listing(listing_id: int, db: Session = Depends(get_db)):
+    """Retrieves detailed information about a specific listing."""
+    listing = db.query(Listing).filter(Listing.id == listing_id).first()
+    if not listing:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    return listing
+    
 
 
 @router.put("/listings/{listing_id}")
