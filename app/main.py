@@ -3,7 +3,7 @@ from .config.database import engine, Base
 from .routers import users, listings, transactions, loans
 
 # Create database tables
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="VendorConnect API")
 
