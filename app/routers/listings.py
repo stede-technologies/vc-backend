@@ -26,7 +26,7 @@ def create_listing(listing: ListingCreate, db: Session = Depends(get_db)):
 @router.get("/listings", response_model=list[ListingResponse])
 def get_listings(db: Session = Depends(get_db)):
     """Retrieves a paginated list of active listings (supports search and filtering)."""
-    return db.query(Listing).all()
+    return db.query(Listing).filter(Listing.status == "Active").all()
 
 
 @router.get("/listings/{listing_id}", response_model=ListingResponse)
