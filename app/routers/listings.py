@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..schemas.listings import ListingCreate, ListingResponse
+from ..schemas.listings import ListingCreate, ListingResponse, ListingUpdate
 from ..models.listing import Listing
 from ..config.database import get_db
 
@@ -32,23 +32,41 @@ def get_listings(db: Session = Depends(get_db)):
 @router.get("/listings/{listing_id}", response_model=ListingResponse)
 def get_listing(listing_id: int, db: Session = Depends(get_db)):
     """Retrieves detailed information about a specific listing."""
-    listing = db.query(Listing).filter(Listing.id == listing_id).first()
+    listing = db.query(Listing).filter(Listing.listing_id == listing_id).first()
     if not listing:
         raise HTTPException(status_code=404, detail="Listing not found")
     return listing
     
 
 
-@router.put("/listings/{listing_id}")
-def update_listing(listing_id: int):
+@router.put("/listings/{listing_id}", response_model=ListingResponse)
+def update_listing(listing_id: int, listing_update: ListingUpdate, db: Session = Depends(get_db)):
     """Updates inventory levels, pricing, or description."""
-    return {"message": "Listing updated"}
+    listing = db.query(Listing).filter(Listing.listing_id == listing_id).first()
+    if not listing:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    
+    # Update only the fields that were provided
+    update_data = listing_update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(listing, field, value)
+    
+    db.add(listing)
+    db.commit()
+    db.refresh(listing)
+    return listing
 
 
 @router.delete("/listings/{listing_id}")
-def delete_listing(listing_id: int):
+def delete_listing(listing_id: int, db: Session = Depends(get_db)):
     """Archives or permanently deletes a listing."""
-    return {"message": "Listing deleted"}
+    listing = db.query(Listing).filter(Listing.listing_id == listing_id).first()
+    if not listing:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    
+    db.delete(listing)
+    db.commit()
+    return {"message": "Listing deleted successfully", "listing_id": listing_id}
 
 
 @router.post("/orders")

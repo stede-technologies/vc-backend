@@ -16,6 +16,15 @@ class ListingCreate(ListingBase):
     vendor_id: int
 
 
+class ListingUpdate(BaseModel):
+    product_name: Optional[str] = None
+    product_description: Optional[str] = None
+    price: Optional[Decimal] = None
+    quantity_available: Optional[int] = None
+    image_url: Optional[str] = None
+    status: Optional[str] = None
+
+
 class ListingResponse(ListingBase):
     listing_id: int
     vendor_id: int

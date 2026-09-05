@@ -15,6 +15,13 @@ class TransactionCreate(TransactionBase):
     vendor_id: int
 
 
+class TransactionUpdate(BaseModel):
+    amount: Optional[Decimal] = None
+    type: Optional[str] = None
+    category: Optional[str] = None
+    payment_method: Optional[str] = None
+
+
 class TransactionResponse(TransactionBase):
     transaction_id: int
     vendor_id: int
